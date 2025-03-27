@@ -2,17 +2,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ParkingManager implements Subject {
-
-    private int totalPlazas;
-    private int plazasOcupadas;
+    private int plazasTotales;
+    private int plazasLibres;
     private List<Observer> observers;
 
-    public ParkingManager(int totalPlazas) {
-        this.totalPlazas = totalPlazas;
-        this.plazasOcupadas = 0;
+    public ParkingManager(int plazasTotales) {
+        this.plazasTotales = plazasTotales;
+        this.plazasLibres = plazasTotales; // Al principio todas las plazas están libres
         this.observers = new ArrayList<>();
     }
 
+    public void registrarEntrada() {
+        if (plazasLibres > 0) {
+            plazasLibres--;
+            System.out.println("Entrada registrada. Quedan " + plazasLibres + " plazas libres.");
+            notifyObservers();
+        } else {
+            System.out.println("No hay plazas libres para registrar la entrada.");
+        }
+    }
+
+    public void registrarSalida() {
+        if (plazasLibres < plazasTotales) {
+            plazasLibres++;
+            System.out.println("Salida registrada. Quedan " + plazasLibres + " plazas libres.");
+            notifyObservers();
+        } else {
+            System.out.println("No hay vehículos en el aparcamiento.");
+        }
+    }
+
+    // Métodos de la interfaz Subject
     @Override
     public void addObserver(Observer o) {
         observers.add(o);
@@ -25,29 +45,12 @@ public class ParkingManager implements Subject {
 
     @Override
     public void notifyObservers() {
-        int plazasLibres = totalPlazas - plazasOcupadas;
-        for (Observer o : observers) {
-            o.update(plazasLibres);
+        for (Observer observer : observers) {
+            observer.update(plazasLibres);
         }
     }
 
-    public void registrarEntrada() {
-        if (plazasOcupadas < totalPlazas) {
-            plazasOcupadas++;
-            System.out.println("Vehículo ha entrado.");
-            notifyObservers();
-        } else {
-            System.out.println("Parking completo. No se puede entrar.");
-        }
-    }
-
-    public void registrarSalida() {
-        if (plazasOcupadas > 0) {
-            plazasOcupadas--;
-            System.out.println("Vehículo ha salido.");
-            notifyObservers();
-        } else {
-            System.out.println("Parking vacío. No se puede salir.");
-        }
+    public int getPlazasLibres() {
+        return plazasLibres;
     }
 }
